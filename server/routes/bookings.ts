@@ -12,13 +12,22 @@ export async function routeBookings(
     if (req.method === 'GET') {
       // Шаг 1 · API-GET: замените заглушку получением списка и ответом 200.
       // START API-GET
-      throw new HttpError(501, 'STEP_1', 'Шаг 1: подключите GET /api/bookings.')
+      const bookings = await store.list()
+      sendJson(res, 200, { data: bookings })
+      return
       // END API-GET
     }
     if (req.method === 'POST') {
       // Шаг 4 · API-POST: тело → проверка → серверные поля → запись → ответ 201.
       // START API-POST
-      throw new HttpError(501, 'STEP_4', 'Шаг 4: подключите POST /api/bookings.')
+      const input = validateNewBooking(await readJson(req))
+      const booking: Booking = {
+        id: randomUUID(), name: input.name, seats: input.seats,
+        status: 'new', source: 'web',
+      }
+      const created = await store.add(booking)
+      sendJson(res, 201, { data: created })
+      return
       // END API-POST
     }
     res.setHeader('Allow', 'GET, POST')
@@ -38,7 +47,7 @@ export async function routeBookings(
     if (updated === null) {
       // Шаг 9 · NOT-FOUND: замените учебный отказ на 404 с кодом NOT_FOUND.
       // START NOT-FOUND
-      throw new HttpError(501, 'STEP_9', 'Шаг 9: добавьте отказ для неизвестного id.')
+      throw new HttpError(404, 'NOT_FOUND', 'Заявка не найдена.')
       // END NOT-FOUND
     }
     sendJson(res, 200, { data: updated })
