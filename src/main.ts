@@ -107,7 +107,8 @@ async function submitBooking() {
   try {
     // Шаг 5 · SUBMIT: вместо заглушки дождитесь createBooking и добавьте ответ в массив.
     // START SUBMIT
-    throw new Error('Шаг 5: подключите обработчик формы в src/main.ts.')
+    const created = await createBooking({ name, seats })
+    bookings = [...bookings, created]
     // END SUBMIT
     form.reset()
     note.textContent = ''
@@ -129,7 +130,8 @@ async function confirmFromCard(id: string) {
   try {
     // Шаг 10 · CONFIRM: вызовите готовый API-клиент, замените запись ответом сервера.
     // START CONFIRM
-    throw new Error('Шаг 10: подключите подтверждение в src/main.ts.')
+    const updated = await confirmBooking(id)
+    bookings = bookings.map(row => row.id === id ? updated : row)
     // END CONFIRM
     showMessage('Заявка подтверждена.')
   } catch (error) {
